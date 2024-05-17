@@ -13,36 +13,24 @@
 #include <string>
 #include <vector>
 #include <set>
-
-namespace command
-{
-    enum Commands
-    {
-        NOT_CMD,
-        INVALID,
-        QUIT,
-        HELP,
-        JOIN,
-        LEAVE,
-        USER_LIST,
-        CHATROOM_LIST,
-    };
-}
-
-command::Commands get_command(std::string cmd);
+#include "cmd.h"
 
 class Client
 {
 private:
-    char *id;   // max length 256
+    char buf[BUFSIZ];
+    std:: string id;
     int sock_fd;
+    std::string host;
+    int port;
     struct sockaddr_in server;
 
 public:
-    Client();
+    Client(std::string host, int port);
     ~Client();
 
-    int Socket();
-    int Connect(int sock_fd, const char *(&host), int port);
-    bool log_in(const std::string id);
+    int create_socket();
+    int create_connection();
+    bool log_in();
+    int chat();
 };

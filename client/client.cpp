@@ -1,11 +1,11 @@
 #include "client.h"
 
-Client::Client()
+Client::Client(std::string host, int port) : host(host), port(port) 
 {
 
 }
 
 Client::~Client()
 {
-    
+
 }
