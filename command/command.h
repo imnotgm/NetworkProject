@@ -1,4 +1,5 @@
 #include <string>
+#include "../utils/split.cpp"
 
 namespace command
 {
@@ -16,3 +17,4 @@ namespace command
 }
 
 command::commands get_cmd_type(std::string cmd);
+void man_page();

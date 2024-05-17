@@ -1,5 +1,4 @@
-#include "./cmd.h"
-#include "../utils/split.cpp"
+#include "./command.h"
 
 using namespace command;
 
@@ -10,12 +9,10 @@ commands get_cmd_type(std::string cmd)
 
     if (cmd == "quit") return QUIT;
     if (cmd == "help") return HELP;
-
+    
     std::vector<std::string> tokens = split(cmd, " ");
     if(tokens.size() > 2) return INVALID;
     
-    if (tokens[0] == "join") return JOIN;
-    if (tokens[0] == "leave") return LEAVE;
     if (tokens[0] == "list")
     {
         if(tokens[1] == "user")
@@ -23,5 +20,7 @@ commands get_cmd_type(std::string cmd)
         if(tokens[1] == "chatroom")
             return CHATROOM_LIST;
     }
+    if (tokens[0] == "join") return JOIN;
+    if (tokens[0] == "leave") return LEAVE;
     return INVALID;
 }
