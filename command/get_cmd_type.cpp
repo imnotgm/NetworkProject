@@ -1,5 +1,5 @@
-#include "cmd.h"
-#include "split.cpp"
+#include "./cmd.h"
+#include "../utils/split.cpp"
 
 using namespace command;
 

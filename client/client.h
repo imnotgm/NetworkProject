@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 #include <set>
-#include "cmd.h"
+#include "../command/cmd.h"
 
 class Client
 {
