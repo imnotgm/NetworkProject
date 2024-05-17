@@ -8,10 +8,10 @@ namespace command
         INVALID,
         QUIT,
         HELP,
-        JOIN,
-        LEAVE,
         USER_LIST,
         CHATROOM_LIST,
+        JOIN,
+        LEAVE,
     };
 }
 

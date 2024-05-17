@@ -8,15 +8,15 @@ commands get_cmd_type(std::string cmd)
     if (cmd[0] != '-') return NOT_CMD;
     cmd.erase(0, 1);
 
-    if (cmd == "q") return QUIT;
-    if (cmd == "h") return HELP;
+    if (cmd == "quit") return QUIT;
+    if (cmd == "help") return HELP;
 
     std::vector<std::string> tokens = split(cmd, " ");
     if(tokens.size() > 2) return INVALID;
     
     if (tokens[0] == "join") return JOIN;
     if (tokens[0] == "leave") return LEAVE;
-    if (tokens[0] == "ls")
+    if (tokens[0] == "list")
     {
         if(tokens[1] == "user")
             return USER_LIST;
