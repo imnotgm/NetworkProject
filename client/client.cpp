@@ -1,11 +1,15 @@
 #include "./client.h"
 
-Client::Client(std::string host, int port) : host(host), port(port) 
+Client::Client(std::string host, int port)
 {
-
+    login_server.first = host;
+    login_server.second = port;
 }
 
-Client::~Client()
+void Client::set_server(std::string host, int port)
 {
-    close(sock_fd);
+    chat_server.first = host;
+    chat_server.second = port;
 }
+
+Client::~Client() {close(sock_fd);}
