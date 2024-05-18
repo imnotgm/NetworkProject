@@ -1,10 +1,10 @@
 #include "./client.h"
 
-int Client::create_socket()
+int Client::create_socket(int opt)
 {
-    if(sock_fd = socket(AF_INET, SOCK_STREAM, 0) < 0)
+    if(sock_fd[opt] = socket(AF_INET, SOCK_STREAM, 0) < 0)
     {
-        printf("Socket creation failed\n");
-        close(sock_fd);
+        printf("[client]: Socket creation failed\n");
+        close(sock_fd[opt]);
     }
 }

@@ -2,5 +2,5 @@
 
 int Client::chat()
 {
-
+    printf("chat chat chat\n");
 }

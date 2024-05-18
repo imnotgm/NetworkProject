@@ -4,28 +4,43 @@ bool Client::log_in()
 {
     char buf[BUFSIZ];
     std::string id;
-    std::cout << "Enter your ID: ";
-    std::cin >> id;
 
-    if(send(sock_fd, id.c_str(), id.size() , 0) == -1)
+    bool loggedIn= false;
+    int attempt = 1;
+
+    while(attempt <= 5)
     {
-        printf("Failed to send ID.");
-        close(sock_fd);
-        
-        return false;
-    }
+        std::cout << "Enter your ID(" << attempt++ << "/5): ";
+        std::cin >> id;
+        snprintf(buf, BUFSIZ, request_form.c_str(), "login", id);
 
-    if(recv(sock_fd, buf, BUFSIZ, 0) < 0)
-    {
-        printf("Failed to receive authentication.");
+        if(send(sock_fd[0], buf, strlen(buf), 0) < 0)
+        {
+            printf("[client/login]: Failed to send to server.\n");
+            continue;
+        }
+        if(recv(sock_fd[0], buf, BUFSIZ, 0) < 0)
+        {
+            printf("[client/login]: Failed to receive from server.\n");
+            continue;
+        }
 
-        return false;
-    }
-    else
-    {
-        printf("Hello %s\n", id);
-        this->id = id;
+        std::string auth;
+        sscanf(buf, "authentication: %s", auth);
+        loggedIn = auth == "success" ? true : false;
+        if(loggedIn)
+        {
+            printf("Hello %s.\n", id);
+            this->id = id;
 
-        return true;
+            return true;
+        }
+        else
+        {
+            printf("ID already taken. Please choose a different ID.\n");
+            continue;
+        }
     }
+    printf("Too many login attempts. Terminating program.");
+    return false;
 }
