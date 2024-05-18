@@ -13,12 +13,11 @@
 #include <string>
 #include <vector>
 #include <set>
-#include "../command/cmd.h"
+#include "../command/command.h"
 
 class Client
 {
 private:
-    char buf[BUFSIZ];
     std:: string id;
     int sock_fd;
     std::string host;
@@ -28,7 +27,7 @@ private:
 public:
     Client(std::string host, int port);
     ~Client();
-
+    
     int create_socket();
     int create_connection();
     bool log_in();

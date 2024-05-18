@@ -2,6 +2,7 @@
 
 bool Client::log_in()
 {
+    char buf[BUFSIZ];
     std::string id;
     std::cout << "Enter your ID: ";
     std::cin >> id;
@@ -16,13 +17,13 @@ bool Client::log_in()
 
     if(recv(sock_fd, buf, BUFSIZ, 0) < 0)
     {
-        printf("Fialed to receive authentication.");
+        printf("Failed to receive authentication.");
 
         return false;
     }
     else
     {
-        printf("Log-in success.");
+        printf("Hello %s\n", id);
         this->id = id;
 
         return true;
