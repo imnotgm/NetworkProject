@@ -3,7 +3,7 @@
 int main(int argc, char *argv[])
 {
     const std::string login_host = (argc > 1) ? argv[1] :  "127.0.0.1";
-    const int login_port = (argc > 2) ? std::atoi(argv[2]) : 8000;
+    const int login_port = (argc > 2) ? std::atoi(argv[2]) : 10000;
     
     Client client(login_host, login_port);
     client.create_socket(0);

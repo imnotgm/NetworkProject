@@ -13,7 +13,8 @@
 #include <string>
 #include <vector>
 #include <set>
-#include "../command/command.h"
+#include "../utils/utils.h"
+// #include "../command/command.h"
 
 class Client
 {
@@ -26,6 +27,7 @@ private:
 
     std::string request_form =  "method: %s\r\n"
                                 "id: %s\r\n"
+                                "fin: %d\r\n"
                                 "\r\n";
 
 public:
