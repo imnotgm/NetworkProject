@@ -11,7 +11,7 @@ void Client::create_connection(int opt)
 
     if(connect(sock_fd[opt], (struct sockaddr *)&server, sizeof(server)) < 0)
     {
-        perror("[client]: Failed to connect.\n");
+        printf("[client]: Failed to connect.\n");
         close(sock_fd[opt]);
     }
 }

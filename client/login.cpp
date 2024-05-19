@@ -10,7 +10,7 @@ bool Client::log_in()
 
     while(attempt <= 5)
     {
-        std::cout << "Enter your ID(" << attempt++ << "/5): ";
+        printf("Enter your ID(%d/5): ");
         std::cin >> id;
         snprintf(buf, BUFSIZ, request_form.c_str(), "login", id);
 
@@ -27,7 +27,7 @@ bool Client::log_in()
 
         std::string auth;
         sscanf(buf, "authentication: %s", auth);
-        loggedIn = auth == "success" ? true : false;
+        loggedIn = (auth == "success") ? true : false;
         if(loggedIn)
         {
             printf("Hello %s.\n", id);
@@ -40,6 +40,12 @@ bool Client::log_in()
             printf("ID already taken. Please choose a different ID.\n");
             continue;
         }
+
+        printf("Continue to log in? [Y/N]: ");
+        char ans[1];
+        scanf("%s", ans);
+        if(strcasecmp(ans, "y"))
+            break;
     }
     printf("Too many login attempts. Terminating program.");
     return false;
