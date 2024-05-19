@@ -4,7 +4,6 @@
 typedef struct
 {
     std::string id;
-    std::string host;
-    int port;
     int sock_fd;
+    struct sockaddr_in user_addr;
 }User;

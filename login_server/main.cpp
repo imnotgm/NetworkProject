@@ -1,11 +1,20 @@
 #include "./login_server.h"
 
+std::map<std::string, User> user_list;
+std::vector<User> user_tmp;
+std::string response_form =
+    "method: %s\r\n"
+    "authentication: %s\r\n"
+    "\r\n";
+    
 int main(int argc, char *argv[])
 {
-    const int port = (argc > 1) ? std::atoi(argv[1]) : 8000;
+    const int port = (argc > 1) ? std::atoi(argv[1]) : 10000;
     const int backlog = (argc > 2) ? std::atoi(argv[2]) : SOMAXCONN;
     
-    int master_socket = server_socket();
-    server_bind(master_socket, port);
-    server_listen(master_socket, backlog);
+    int master_sock = server_socket();
+    server_bind(master_sock, port);
+    server_listen(master_sock, backlog);
+    authenticate(master_sock);
+    close(master_sock);
 }
