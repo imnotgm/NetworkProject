@@ -34,26 +34,3 @@ std::map<std::string, std::string> parseHeaders(const char* msg)
     free(msg_copy);
     return headers;
 }
-
-// int main()
-// {
-//     char msg[] =
-//         "method: %s\r\n"
-//         "authentication: %s\r\n"
-//         "fin: %d\r\n"
-//         "\r\n";
-
-//     char buf[BUFSIZ];
-//     snprintf(buf, BUFSIZ, msg, "login", "success", 1);
-//     std::map<std::string, std::string> headers = parseHeaders(buf);
-
-//     printf("%s\n", buf);
-//     std::string str = headers["method"];
-//     printf("%s\n", str.c_str());
-
-//     for (const auto& pair : headers) {
-//         std::cout << pair.first << ":" << pair.second << std::endl;
-//     }
-
-//     return 0;
-// }
