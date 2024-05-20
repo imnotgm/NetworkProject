@@ -14,12 +14,11 @@ void remove_user(std::string id, const std::string& file_path)
     std::ifstream infile(file_path);
     std::stringstream buffer;
     buffer << infile.rdbuf();
+    std::string content = buffer.str();
     infile.close();
 
-    std::string content = buffer.str();
-    
     // Remove the user information from the content
-    std::string::size_type pos = content.find("\"id\": \"" + id + "\"");
+    std::string::size_type pos = content.find("\"" + id + "\"");
     if(pos != std::string::npos)
     {
         std::string::size_type endPos = content.find("},\n", pos);

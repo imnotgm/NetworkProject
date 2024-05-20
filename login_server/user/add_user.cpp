@@ -11,9 +11,6 @@ void add_user(std::string id, const std::string& file_path)
 {
     User user = tmp_user.back();
     user.id = id;
-    printf("[Handler] user %s: (ip: %s, port: %d)\n",
-            user.id.c_str(), inet_ntoa(user.addr.sin_addr), ntohs(user.addr.sin_port));
-
     user_list[id] = user;
     tmp_user.pop_back();
 
