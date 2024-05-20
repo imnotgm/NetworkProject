@@ -5,5 +5,5 @@ typedef struct
 {
     std::string id;
     int sock_fd;
-    struct sockaddr_in user_addr;
+    struct sockaddr_in addr;
 }User;

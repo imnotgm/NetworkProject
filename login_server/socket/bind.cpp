@@ -1,4 +1,4 @@
-#include "./login_server.h"
+#include "../login_server.h"
 
 void server_bind(int sock_fd, int port)
 {

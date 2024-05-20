@@ -2,14 +2,19 @@
 
 # 컴파일러와 컴파일 플래그 정의
 CXX = g++
-CXXFLAGS = -Ilogin_server -I../utils -std=c++11 -Wall -Wextra
+CXXFLAGS = -Ilogin_server -I./socket -I./user -I../utils -std=c++11 -Wall -Wextra
 
 # 소스 파일과 객체 파일 목록 정의
-SRCS = main.cpp accept.cpp authenticate.cpp bind.cpp id_check.cpp listen.cpp socket.cpp ../utils/parseHeader.cpp
+SRCS =  main.cpp authenticate.cpp connection_handler.cpp \
+		./socket/socket.cpp ./socket/bind.cpp ./socket/listen.cpp ./socket/accept.cpp \
+		./user/add_user.cpp ./user/remove_user.cpp ./user/send_users.cpp \
+		../utils/parseHeader.cpp
+
+# Object files
 OBJS = $(SRCS:.cpp=.o)
 
 # 실행 파일 이름
-TARGET = login_server
+TARGET = server
 
 # 기본 타겟 (make만 실행할 때)
 all: clean $(TARGET)

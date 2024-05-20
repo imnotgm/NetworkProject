@@ -1,7 +1,7 @@
 #include "./login_server.h"
 
 std::map<std::string, User> user_list;
-std::vector<User> user_tmp;
+std::vector<User> tmp_user;
 std::string response_form =
     "method: %s\r\n"
     "authentication: %s\r\n"
@@ -15,6 +15,6 @@ int main(int argc, char *argv[])
     int master_sock = server_socket();
     server_bind(master_sock, port);
     server_listen(master_sock, backlog);
-    authenticate(master_sock);
+    connection_handler(master_sock);
     close(master_sock);
 }

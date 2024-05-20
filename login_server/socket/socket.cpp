@@ -1,4 +1,4 @@
-#include "./login_server.h"
+#include "../login_server.h"
 
 int server_socket()
 {

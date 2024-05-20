@@ -8,6 +8,8 @@
 #include <unistd.h>
 #include <sys/select.h>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <stdexcept>
 #include <cerrno>
 #include <cstring>
@@ -18,7 +20,7 @@
 #include "../utils/utils.h"
 
 extern std::map<std::string, User> user_list;
-extern std::vector<User> user_tmp;
+extern std::vector<User> tmp_user;
 
 extern std::string response_form;
 
@@ -26,7 +28,10 @@ int server_socket();
 void server_bind(int sock_fd, int port);
 void server_listen(int sock_fd, int backlog);
 int server_accept(int sock_fd);
-bool id_check(std::string id);
-int authenticate(int sock_fd);
+bool authenticate(std::string id);
+void add_user(std::string id);
+void remove_user(std::string id);
+void send_userList(int sock_fd, const std::string& filename);
+int connection_handler(int sock_fd);
 
 #endif
