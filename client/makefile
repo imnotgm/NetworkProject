@@ -2,10 +2,14 @@
 
 # 컴파일러와 컴파일 플래그 정의
 CXX = g++
-CXXFLAGS = -I. -I../utils -std=c++11 -Wall -Wextra
+CXXFLAGS = -I. -I./socket -I../utils -std=c++11 -Wall -Wextra
 
 # 소스 파일과 객체 파일 목록 정의
-SRCS = main.cpp chat.cpp client.cpp socket.cpp connect.cpp login.cpp ../utils/parseHeader.cpp
+SRCS =  main.cpp client.cpp login.cpp chat.cpp \
+		./socket/socket.cpp ./socket/connect.cpp \
+		../utils/parseHeader.cpp
+
+# Object files
 OBJS = $(SRCS:.cpp=.o)
 
 # 실행 파일 이름
