@@ -9,6 +9,5 @@ int main(int argc, char *argv[])
     client.create_socket(0);
     client.create_connection(0);
     if(client.log_in()) client.chat();
-    else exit(1);
     std::cout << "Program terminated successfully\n";
 }

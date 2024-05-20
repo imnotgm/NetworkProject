@@ -2,7 +2,11 @@
 
 int Client::chat()
 {
-    printf("chat chat chat\n");
-    
+    std::string msg;
+    while(true)
+    {
+        std::cin >> msg;
+        std::cout << msg;
+    }
     return 0;
 }

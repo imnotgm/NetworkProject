@@ -26,6 +26,7 @@ private:
     struct sockaddr_in server;
 
     std::string request_form =  "method: %s\r\n"
+                                "status: %s\r\n"
                                 "id: %s\r\n"
                                 "fin: %d\r\n"
                                 "\r\n";

@@ -6,17 +6,14 @@ bool Client::log_in()
     std::string id;
 
     bool authenticated= false;
-    int attempt = 0;
     int fin = 0;
 
-    while(attempt++ < 5)
+    for(int attempt = 1; attempt <= 5; attempt++)
     {
         printf("Enter your ID(%d/5): ", attempt);
         std::cin >> id;
 
-        if(attempt == 5)
-            fin = 1;
-        snprintf(buf, BUFSIZ, request_form.c_str(), "login", id.c_str(), fin);
+        snprintf(buf, BUFSIZ, request_form.c_str(), "login", "online", id.c_str(), fin);
 
         if(send(sock_fd[0], buf, strlen(buf), 0) < 0)
         {
@@ -48,9 +45,10 @@ bool Client::log_in()
         if(strcasecmp(ans, "y"))
             break;
     }
-    snprintf(buf, BUFSIZ, request_form.c_str(), "login", id.c_str(), 1);
+    fin = 1;
+    snprintf(buf, BUFSIZ, request_form.c_str(), "login", "offline", id.c_str(), fin);
     send(sock_fd[0], buf, strlen(buf), 0);
-    printf("Too many login attempts. Terminating program.");
+    printf("Failed to log-in.\n");
 
     return false;
 }
