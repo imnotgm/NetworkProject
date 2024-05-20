@@ -6,7 +6,8 @@ std::string response_form =
     "method: %s\r\n"
     "authentication: %s\r\n"
     "\r\n";
-    
+const std::string file_path = "./user/online_users.txt";
+
 int main(int argc, char *argv[])
 {
     const int port = (argc > 1) ? std::atoi(argv[1]) : 10000;
@@ -15,6 +16,6 @@ int main(int argc, char *argv[])
     int master_sock = server_socket();
     server_bind(master_sock, port);
     server_listen(master_sock, backlog);
-    connection_handler(master_sock);
+    connection_handler(master_sock, file_path);
     close(master_sock);
 }

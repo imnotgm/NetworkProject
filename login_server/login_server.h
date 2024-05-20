@@ -29,9 +29,11 @@ void server_bind(int sock_fd, int port);
 void server_listen(int sock_fd, int backlog);
 int server_accept(int sock_fd);
 bool authenticate(std::string id);
-void add_user(std::string id);
-void remove_user(std::string id);
-void send_userList(int sock_fd, const std::string& filename);
-int connection_handler(int sock_fd);
+
+void add_user(std::string id, const std::string& file_path);
+void remove_user(std::string id, const std::string& file_path);
+void send_userList(int sock_fd, const std::string& file_path);
+
+int connection_handler(int sock_fd, const std::string& file_path);
 
 #endif

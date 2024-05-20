@@ -7,7 +7,7 @@
     "port": 8080
 }, */
 
-void add_user(std::string id)
+void add_user(std::string id, const std::string& file_path)
 {
     User user = tmp_user.back();
     user.id = id;
@@ -17,7 +17,7 @@ void add_user(std::string id)
     user_list[id] = user;
     tmp_user.pop_back();
 
-    std::ifstream infile("online_users.txt");
+    std::ifstream infile(file_path);
     std::stringstream buffer;
     buffer << infile.rdbuf();
     std::string content = buffer.str();
@@ -36,7 +36,7 @@ void add_user(std::string id)
         content.insert(pos, ss.str());
     }
 
-    std::ofstream out_file("online_users.txt", std::ios_base::app);
+    std::ofstream out_file(file_path, std::ios_base::app);
     if(out_file.is_open())
     {
         out_file << ss.str();

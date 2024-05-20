@@ -1,6 +1,6 @@
 #include "./login_server.h"
 
-int connection_handler(int sock_fd)
+int connection_handler(int sock_fd, const std::string& file_path)
 {
     char buf[BUFSIZ];
     int new_socket;
@@ -78,7 +78,8 @@ int connection_handler(int sock_fd)
                 printf("[Handler] Connection closed.\n");
                 FD_CLR(client_sock, &read_sds);
                 close(client_sock);
-                clients.erase(client_sock);
+                // TODO: segmentation fault
+                // clients.erase(client_sock);
                 continue;
             }
             if(method == "login")
@@ -92,7 +93,7 @@ int connection_handler(int sock_fd)
                     }
                     printf("[Handler] %s log-in.\n", id.c_str());
 
-                    add_user(id);
+                    add_user(id, file_path);
 
                     continue;
                 }
@@ -112,7 +113,7 @@ int connection_handler(int sock_fd)
                     printf("[Handler] Failed to send log-out msg.\n");
                 }
                 printf("[Handler] %s: log-out.\n", id.c_str());
-                remove_user(id);
+                remove_user(id, file_path);
                 FD_CLR(client_sock, &read_sds);
                 close(client_sock);
                 clients.erase(client_sock);

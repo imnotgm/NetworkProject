@@ -1,11 +1,11 @@
 #include "../login_server.h"
 
-void send_userList(int sock_fd, const std::string& filename)
+void send_userList(int sock_fd, const std::string& file_path)
 {
-    std::ifstream file(filename, std::ios::in | std::ios::binary);
+    std::ifstream file(file_path, std::ios::in | std::ios::binary);
     if (!file.is_open())
     {
-        std::cerr << "Failed to open file: " << filename << std::endl;
+        std::cerr << "Failed to open file: " << file_path << std::endl;
         return;
     }
 

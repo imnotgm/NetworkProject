@@ -7,11 +7,11 @@
     "port": 8080
 }, */
 
-void remove_user(std::string id)
+void remove_user(std::string id, const std::string& file_path)
 {
     user_list.erase(id);
 
-    std::ifstream infile("online_users.txt");
+    std::ifstream infile(file_path);
     std::stringstream buffer;
     buffer << infile.rdbuf();
     infile.close();
@@ -30,7 +30,7 @@ void remove_user(std::string id)
     }
 
     // Write the updated content back to the file
-    std::ofstream out_file("online_users.txt", std::ios_base::trunc);
+    std::ofstream out_file(file_path, std::ios_base::trunc);
     out_file << content;
     out_file.close();
 }
