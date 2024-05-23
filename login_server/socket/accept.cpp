@@ -11,7 +11,7 @@ int server_accept(int sock_fd)
         printf("Failed to accept.\n");
     }
     
-    User user = {"tmp", sock_fd, addr};
+    User user = {"tmp", sock_fd, 0, addr};
     tmp_user.push_back(user);
 
     return user_sock;
