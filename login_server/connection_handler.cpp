@@ -3,25 +3,23 @@
 int connection_handler(int sock_fd, const std::string& file_path)
 {
     char buf[BUFSIZ];
-    int new_socket;
-    int max_sd = sock_fd;
+    int new_socket, max_fd = sock_fd;
 
     fd_set read_sds;
-    std::map<int, User> clients;
 
     while(1)
-    // for(int i = 0; i < 5; i++)
     {
-        printf("[Handler] checking while loop\n");
+        printf("===================================================\n");
         FD_ZERO(&read_sds);
         FD_SET(sock_fd, &read_sds);
+        memset(buf, 0, BUFSIZ);
 
-        for(auto &client : clients)
+        for(auto &user : users)
         {
-            FD_SET(client.first, &read_sds);
+            FD_SET(user.first, &read_sds);
         }
 
-        if((select(max_sd + 1, &read_sds, NULL, NULL, NULL)) < 0)
+        if((select(max_fd + 1, &read_sds, NULL, NULL, NULL)) < 0)
         {
             printf("[Handler/select] No events on descriptors.\n");
             continue;
@@ -36,22 +34,22 @@ int connection_handler(int sock_fd, const std::string& file_path)
             }
 
             FD_SET(new_socket, &read_sds);
-            if(new_socket > max_sd)
-                max_sd = new_socket;
+            if(new_socket > max_fd)
+                max_fd = new_socket;
 
-            User user = tmp_user.back();
-            clients[new_socket] = user;
+            User new_user = tmp_user.back();
+            users[new_socket] = new_user;
             printf("[Handler] Connection from socket #%d: (ip: %s, port: %d)\n",
-                    new_socket, inet_ntoa(user.addr.sin_addr), ntohs(user.addr.sin_port));
+                    new_socket, inet_ntoa(new_user.addr.sin_addr), ntohs(new_user.addr.sin_port));
             continue;
         }
 
         std::vector<int> closed_socks;
 
-        for(auto &client : clients)
+        for(auto &user : users)
         {
-            printf("[Handler] checking for loop\n");
-            int sock = client.first;
+            memset(buf, 0, BUFSIZ);
+            int sock = user.first;
 
             if(!FD_ISSET(sock, &read_sds)) continue;
 
@@ -74,63 +72,50 @@ int connection_handler(int sock_fd, const std::string& file_path)
             std::string id = headers["id"];
             int fin = std::stoi(headers["fin"]);
 
+            std::string body = "";
+            std::string detail = "";
+
             if(fin == 1)
             {
                 printf("[Handler] Connection closed.\n");
                 closed_socks.push_back(sock);
-
                 continue;
             }
-            if(method == "login")
+            if(method == "LOG-IN")
             {
-                if(authenticate(id))
+                if(authenticate(id, file_path))
                 {
-                    snprintf(buf, BUFSIZ, response_form.c_str(), "login", "success");
-                    if(send(sock, buf, strlen(buf), 0) < 0)
-                    {
-                        printf("[Handler] Failed to send log-in msg.\n");
-                    }
-                    printf("[Handler] USER %s log-in.\n", id.c_str());
-
-                    clients[sock].id = id;
-                    add_user(id, file_path);
+                    add_user(sock, id, file_path);
+                    body = online_users();
+                    message_handler(sock, buf, BUFSIZ, 1, body, method, detail);
 
                     continue;
                 }
-
-                snprintf(buf, BUFSIZ, response_form.c_str(), "login", "fail");
-                if(send(sock, buf, strlen(buf), 0) < 0)
-                {
-                    printf("[Handler] Failed to send log-in msg.\n");
-                }
-                printf("[Handler] log-in failed: ID already in use.\n");
+                detail = "ID already in uses";
+                message_handler(sock, buf, BUFSIZ, 0, body, method, detail);
             }
-            else if(method == "logout")
+            else if(method == "LOG-OUT")
             {
-                snprintf(buf, BUFSIZ, response_form.c_str(), "logout", "success");
-                if(send(sock, buf, strlen(buf), 0) < 0)
-                {
-                    printf("[Handler] Failed to send log-out msg.\n");
-                }
-                printf("[Handler] USER %s: log-out.\n", id.c_str());
+                message_handler(sock, buf, BUFSIZ, 1, body, method, detail);
                 closed_socks.push_back(sock);
 
                 continue;
             }
-            else if(method == "get")
+            else if(method == "GET")
             {
-                snprintf(buf, BUFSIZ, response_form.c_str(), "get", "success");
+                body = online_users();
+                message_handler(sock, buf, BUFSIZ, 1, body, method, detail);
             }
         }
         for(int sock : closed_socks)
         {
-            std::string id = clients[sock].id;
+            std::string id = users[sock].id;
             printf("[Handler] closing session for USER %s\n", id.c_str());
 
-            remove_user(id, file_path);
+            remove_user(sock, file_path);
             FD_CLR(sock, &read_sds);
             close(sock);
-            clients.erase(sock);
+            users.erase(sock);
         }
     }
     return 0;

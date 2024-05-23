@@ -1,11 +1,8 @@
 #include "./login_server.h"
 
-std::map<std::string, User> user_list;
+std::map<int, User> users;
 std::vector<User> tmp_user;
-std::string response_form =
-    "method: %s\r\n"
-    "authentication: %s\r\n"
-    "\r\n";
+
 const std::string file_path = "./user/online_users.txt";
 
 int main(int argc, char *argv[])
