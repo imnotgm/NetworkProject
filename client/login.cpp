@@ -5,40 +5,44 @@ bool Client::log_in()
     char buf[BUFSIZ];
     std::string id;
 
-    bool authenticated= false;
+    bool authenticated = false;
     int fin = 0;
 
     for(int attempt = 1; attempt <= 5; attempt++)
     {
-        printf("Enter your ID(%d/5): ", attempt);
+        printf("[System] Enter your ID(%d/5): ", attempt);
         std::cin >> id;
 
-        snprintf(buf, BUFSIZ, request_form.c_str(), "login", "online", id.c_str(), fin);
+        snprintf(buf, BUFSIZ, request_form.c_str(), "LOG-IN", "online", id.c_str(), fin);
 
         if(send(sock_fd[0], buf, strlen(buf), 0) < 0)
         {
-            printf("[client/login]: Failed to send request msg.\n");
+            printf("[System]: Failed to send request msg.\n");
             continue;
         }
         if(recv(sock_fd[0], buf, BUFSIZ, 0) < 0)
         {
-            printf("[client/login]: Failed to receive response msg.\n");
+            printf("[System]: Failed to receive response msg.\n");
             continue;
         }
 
         std::map<std::string, std::string> headers = parseHeaders(buf);
-        std::string login_status = headers["authentication"];
-        authenticated = (login_status == "success") ? true : false;
+        std::string status = headers["status"];
+        std::string body = headers["body"];
+        authenticated = (status == "OK") ? true : false;
 
         if(authenticated)
         {
-            printf("Hello %s.\n", id.c_str());
+            printf("[System] Hello %s.\n", id.c_str());
+            printf("===========================================\n");
+            printf("%s\n", body.c_str());
+            printf("===========================================\n");
             this->id = id;
-
+            
             return true;
         }
 
-        printf( "ID already taken. Please choose a different ID.\n"
+        printf( "[System] ID already taken. Please choose a different ID. "
                 "Continue to log in? [Y/N]: ");
         char ans[10];
         scanf("%s", ans);
@@ -46,9 +50,9 @@ bool Client::log_in()
             break;
     }
     fin = 1;
-    snprintf(buf, BUFSIZ, request_form.c_str(), "login", "offline", id.c_str(), fin);
+    snprintf(buf, BUFSIZ, request_form.c_str(), "LOG-OUT", "offline", id.c_str(), fin);
     send(sock_fd[0], buf, strlen(buf), 0);
-    printf("Failed to log-in.\n");
+    printf("[System] Failed to log-in.\n");
 
     return false;
 }

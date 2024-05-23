@@ -2,13 +2,13 @@
 
 # 컴파일러와 컴파일 플래그 정의
 CXX = g++
-CXXFLAGS = -Ilogin_server -I./socket -I./user -I../utils -std=c++11 -Wall -Wextra
+CXXFLAGS = -Ilogin_server -I./socket -I./user -I../include -I../include/utils -I../include/rapidjson -std=c++11 -Wall -Wextra
 
 # 소스 파일과 객체 파일 목록 정의
-SRCS =  main.cpp authenticate.cpp connection_handler.cpp \
-		./socket/socket.cpp ./socket/bind.cpp ./socket/listen.cpp ./socket/accept.cpp \
-		./user/add_user.cpp ./user/remove_user.cpp ./user/send_users.cpp \
-		../utils/parseHeader.cpp
+SRCS =  main.cpp authenticate.cpp message_handler.cpp connection_handler.cpp \
+        ./socket/socket.cpp ./socket/bind.cpp ./socket/listen.cpp ./socket/accept.cpp \
+        ./user/add_user.cpp ./user/remove_user.cpp ./user/online_users.cpp \
+        ../include/utils/parseHeader.cpp
 
 # Object files
 OBJS = $(SRCS:.cpp=.o)
@@ -32,4 +32,5 @@ clean:
 	rm -f $(OBJS) $(TARGET)
 
 # 디버그 빌드
-debug: CXXFLAGS +=
+debug: CXXFLAGS += -g
+all: $(TARGET)
