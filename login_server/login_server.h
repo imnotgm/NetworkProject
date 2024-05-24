@@ -38,8 +38,8 @@ void add_user(int sock_fd, std::string id, const std::string &file_path);
 void remove_user(int sock_fd, const std::string &file_path);
 std::string online_users();
 
-int message_handler(int sock_fd, char buf[], int buf_size,
+int msg_handler(int sock_fd, char buf[], int buf_size,
                     int status, std::string body, std::string method, std::string detail);
-int connection_handler(int sock_fd, const std::string &file_path);
+int conn_handler(int master_sock, const std::string &file_path);
 
 #endif

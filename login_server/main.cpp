@@ -13,6 +13,6 @@ int main(int argc, char *argv[])
     int master_sock = server_socket();
     server_bind(master_sock, port);
     server_listen(master_sock, backlog);
-    connection_handler(master_sock, file_path);
+    conn_handler(master_sock, file_path);
     close(master_sock);
 }

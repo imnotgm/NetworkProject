@@ -1,9 +1,9 @@
 #include "./login_server.h"
 
-int connection_handler(int sock_fd, const std::string& file_path)
+int conn_handler(int master_sock, const std::string& file_path)
 {
     char buf[BUFSIZ];
-    int new_socket, max_fd = sock_fd;
+    int new_socket, max_fd = master_sock;
 
     fd_set read_sds;
 
@@ -11,7 +11,7 @@ int connection_handler(int sock_fd, const std::string& file_path)
     {
         printf("===================================================\n");
         FD_ZERO(&read_sds);
-        FD_SET(sock_fd, &read_sds);
+        FD_SET(master_sock, &read_sds);
         memset(buf, 0, BUFSIZ);
 
         for(auto &user : users)
@@ -25,9 +25,9 @@ int connection_handler(int sock_fd, const std::string& file_path)
             continue;
         }
 
-        if(FD_ISSET(sock_fd, &read_sds))
+        if(FD_ISSET(master_sock, &read_sds))
         {
-            if((new_socket = server_accept(sock_fd)) < 0)
+            if((new_socket = server_accept(master_sock)) < 0)
             {
                 printf("[Handler/accept] Failed to accept.\n");
                 continue;
@@ -81,22 +81,22 @@ int connection_handler(int sock_fd, const std::string& file_path)
                 closed_socks.push_back(sock);
                 continue;
             }
-            if(method == "LOG-IN")
+            if(method == "LOG_IN")
             {
                 if(authenticate(id, file_path))
                 {
                     add_user(sock, id, file_path);
                     body = online_users();
-                    message_handler(sock, buf, BUFSIZ, 1, body, method, detail);
+                    msg_handler(sock, buf, BUFSIZ, 1, body, method, detail);
 
                     continue;
                 }
                 detail = "ID already in uses";
-                message_handler(sock, buf, BUFSIZ, 0, body, method, detail);
+                msg_handler(sock, buf, BUFSIZ, 0, body, method, detail);
             }
-            else if(method == "LOG-OUT")
+            else if(method == "LOG_OUT")
             {
-                message_handler(sock, buf, BUFSIZ, 1, body, method, detail);
+                msg_handler(sock, buf, BUFSIZ, 1, body, method, detail);
                 closed_socks.push_back(sock);
 
                 continue;
@@ -104,7 +104,7 @@ int connection_handler(int sock_fd, const std::string& file_path)
             else if(method == "GET")
             {
                 body = online_users();
-                message_handler(sock, buf, BUFSIZ, 1, body, method, detail);
+                msg_handler(sock, buf, BUFSIZ, 1, body, method, detail);
             }
         }
         for(int sock : closed_socks)

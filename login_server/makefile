@@ -5,7 +5,7 @@ CXX = g++
 CXXFLAGS = -Ilogin_server -I./socket -I./user -I../include -I../include/utils -I../include/rapidjson -std=c++11 -Wall -Wextra
 
 # 소스 파일과 객체 파일 목록 정의
-SRCS =  main.cpp authenticate.cpp message_handler.cpp connection_handler.cpp \
+SRCS =  main.cpp authenticate.cpp msg_handler.cpp conn_handler.cpp \
         ./socket/socket.cpp ./socket/bind.cpp ./socket/listen.cpp ./socket/accept.cpp \
         ./user/add_user.cpp ./user/remove_user.cpp ./user/online_users.cpp \
         ../include/utils/parseHeader.cpp
