@@ -23,8 +23,8 @@
 #include "../include/rapidjson/stringbuffer.h"
 #include "../include/rapidjson/prettywriter.h"
 
-extern std::map<int, User> users;
 extern std::vector<User> tmp_user;
+extern std::map<int, User> users;
 
 // extern std::string response_form;
 

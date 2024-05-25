@@ -105,12 +105,21 @@ int conn_handler(int master_sock, const std::string& file_path)
             {
                 body = online_users();
                 msg_handler(sock, buf, BUFSIZ, 1, body, method, detail);
+
+                continue;
+            }
+            else if(method == "QUIT")
+            {
+                msg_handler(sock, buf, BUFSIZ, 1, body, method, detail);
+                closed_socks.push_back(sock);
+
+                continue;
             }
         }
         for(int sock : closed_socks)
         {
             std::string id = users[sock].id;
-            printf("[Handler] closing session for USER %s\n", id.c_str());
+            printf("[Handler] closing session for user(%s)\n", id.c_str());
 
             remove_user(sock, file_path);
             FD_CLR(sock, &read_sds);

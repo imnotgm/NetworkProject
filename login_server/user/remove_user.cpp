@@ -38,7 +38,7 @@ void remove_user(int sock_fd, const std::string &file_path)
 
     // Write the updated JSON back to the file
     rapidjson::StringBuffer buffer;
-    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
     doc.Accept(writer);
 
     std::ofstream out_file(file_path);

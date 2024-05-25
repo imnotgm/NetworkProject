@@ -31,7 +31,7 @@ void add_user(int sock_fd, std::string id, const std::string &file_path)
 
     rapidjson::Value userObj(rapidjson::kObjectType);
     userObj.AddMember("id", rapidjson::Value(user.id.c_str(), allocator), allocator);
-    userObj.AddMember("sock_fd", user.sock_fd, allocator);
+    userObj.AddMember("socket #", user.sock_fd, allocator);
 
     rapidjson::Value addr(rapidjson::kObjectType);
     addr.AddMember("sin_family", user.addr.sin_family, allocator);
