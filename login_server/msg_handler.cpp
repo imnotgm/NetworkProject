@@ -1,41 +1,27 @@
 #include "./login_server.h"
 
-int msg_handler(int sock_fd, char buf[], int buf_size,
-                    int status, std::string body, std::string method, std::string detail)
+int msg_handler(int sock, std::string status, std::string body, std::string method, std::string detail)
 {
-    std::string response_form =
+    std::string response_msg =
                 "status: %s\r\n"
                 "content-length: %d\r\n"
                 "\r\n"
                 "%s";
 
-    User user = users[sock_fd];
-    int content_len = body.length();
+    char buf[BUFSIZ];
+    memset(buf, 0, BUFSIZ);
 
-    if(status)
+    User user = users[sock];
+
+    snprintf(buf, BUFSIZ, response_msg.c_str(), status.c_str(), body.length(), body.c_str());
+
+    if(send(sock, buf, strlen(buf), 0) < 0)
     {
-        snprintf(buf, buf_size, response_form.c_str(), "OK", content_len, body.c_str());
+        printf("[msg_handler] request(%s) from user user(%s) failed.\n", method.c_str(), user.id.c_str());
 
-        if(send(sock_fd, buf, strlen(buf), 0) < 0)
-        {
-            printf("[Handler] Failed to respond to request(%s) from user(%s).\n", method.c_str(), user.id.c_str());
-
-            return 0;
-        }
-        printf("[Handler] user(%s) %s: SUCCEED. %s\n", user.id.c_str(), method.c_str(), detail.c_str());
+        return -1;
     }
-    else
-    {
-        snprintf(buf, buf_size, response_form.c_str(), "Bad", content_len, body.c_str());
-        content_len = strlen(buf);
+    printf("[msg_handler] request(%s) from user(%s) succeeded.\n", method.c_str(), user.id.c_str());
 
-        if(send(sock_fd, buf, strlen(buf), 0) < 0)
-        {
-            printf("[Handler] Failed to respond to request(%s) from user(%s).\n", method.c_str(), user.id.c_str());
-
-            return 0;
-        }
-        printf("[Handler] USER(%s) %s: FAIL. %s\n", user.id.c_str(), method.c_str(), detail.c_str());
-    }
-    return 1;
+    return 0;
 }
