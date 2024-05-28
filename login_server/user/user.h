@@ -4,9 +4,9 @@
 typedef struct
 {
     std::string id;
-    int sock_fd;
-    struct sockaddr_in addr;
-    
+    std::string session;
     int is_available;
-    std::string chat_room;
+
+    int sock;
+    struct sockaddr_in addr;
 }User;

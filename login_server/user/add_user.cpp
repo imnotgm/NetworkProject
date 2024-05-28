@@ -1,11 +1,11 @@
 #include "../login_server.h"
 
-void add_user(int sock_fd, std::string id, const std::string &file_path)
+void add_user(int sock, std::string id, const std::string &file_path)
 {
     User user = tmp_user.back();
     user.id = id;
     user.is_available = 1;
-    users[sock_fd] = user;
+    users[sock] = user;
     tmp_user.pop_back();
 
     // Read the existing JSON file
@@ -31,7 +31,7 @@ void add_user(int sock_fd, std::string id, const std::string &file_path)
 
     rapidjson::Value userObj(rapidjson::kObjectType);
     userObj.AddMember("id", rapidjson::Value(user.id.c_str(), allocator), allocator);
-    userObj.AddMember("socket #", user.sock_fd, allocator);
+    userObj.AddMember("socket #", user.sock, allocator);
 
     rapidjson::Value addr(rapidjson::kObjectType);
     addr.AddMember("sin_family", user.addr.sin_family, allocator);

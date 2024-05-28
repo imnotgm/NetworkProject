@@ -1,9 +1,11 @@
 #include "../login_server.h"
 
-void remove_user(int sock_fd, const std::string &file_path)
+void remove_user(int sock, const std::string &file_path)
 {
-    std::string id = users[sock_fd].id;
-    users.erase(sock_fd);
+    if(users.find(sock) == users.end())
+        return;
+    std::string id = users[sock].id;
+    users.erase(sock);
     
     // Read the existing JSON file
     std::ifstream in_file(file_path);

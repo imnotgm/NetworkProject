@@ -29,17 +29,16 @@ extern std::map<int, User> users;
 // extern std::string response_form;
 
 int server_socket();
-void server_bind(int sock_fd, int port);
-void server_listen(int sock_fd, int backlog);
-int server_accept(int sock_fd);
+void server_bind(int sock, int port);
+void server_listen(int sock, int backlog);
+int server_accept(int sock);
 bool authenticate(std::string id, const std::string &file_path);
 
-void add_user(int sock_fd, std::string id, const std::string &file_path);
-void remove_user(int sock_fd, const std::string &file_path);
+void add_user(int sock, std::string id, const std::string &file_path);
+void remove_user(int sock, const std::string &file_path);
 std::string online_users();
 
-int msg_handler(int sock_fd, char buf[], int buf_size,
-                    int status, std::string body, std::string method, std::string detail);
-int conn_handler(int master_sock, const std::string &file_path);
+int msg_handler(int sock, std::string status, std::string body, std::string method, std::string detail);
+int conn_handler(int server_sock, const std::string &file_path);
 
 #endif
