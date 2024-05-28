@@ -1,14 +1,13 @@
 #include "utils.h"
 
-std::vector<std::string> split(std::string str, std::string delim, const int limit = 2)
+std::vector<std::string> split(std::string str, std::string delim, int limit)
 {
     std::vector<std::string> tokens;
     size_t start = 0, pos = 0;
     int found = 0;
-    int n = limit;
 
     if(limit == 0)
-        n = countSubstr(str, delim);
+        limit = countSubstr(str, delim);
 
     while(start < str.length())
     {

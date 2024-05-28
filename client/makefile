@@ -13,7 +13,7 @@ SRCS =  main.cpp client.cpp login.cpp msg_handler.cpp chat.cpp \
 OBJS = $(SRCS:.cpp=.o)
 
 # 실행 파일 이름
-TARGET = client
+TARGET = chat
 
 # 기본 타겟 (make만 실행할 때)
 all: clean $(TARGET)
