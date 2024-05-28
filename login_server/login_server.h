@@ -26,8 +26,6 @@
 extern std::vector<User> tmp_user;
 extern std::map<int, User> users;
 
-// extern std::string response_form;
-
 int server_socket();
 void server_bind(int sock, int port);
 void server_listen(int sock, int backlog);
@@ -38,7 +36,7 @@ void add_user(int sock, std::string id, const std::string &file_path);
 void remove_user(int sock, const std::string &file_path);
 std::string online_users();
 
-int msg_handler(int sock, std::string status, std::string body, std::string method, std::string detail);
+int msg_handler(int sock, std::string status, std::string body, std::string method);
 int conn_handler(int server_sock, const std::string &file_path);
 
 #endif

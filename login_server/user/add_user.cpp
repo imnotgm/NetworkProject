@@ -2,11 +2,9 @@
 
 void add_user(int sock, std::string id, const std::string &file_path)
 {
-    User user = tmp_user.back();
+    User &user = users[sock];
     user.id = id;
     user.is_available = 1;
-    users[sock] = user;
-    tmp_user.pop_back();
 
     // Read the existing JSON file
     std::ifstream in_file(file_path);

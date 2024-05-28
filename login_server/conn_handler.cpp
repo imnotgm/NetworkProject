@@ -37,6 +37,7 @@ int conn_handler(int server_sock, const std::string& file_path)
                 max_fd = new_socket;
 
             User new_user = tmp_user.back();
+            tmp_user.pop_back();
             users[new_socket] = new_user;
             printf("[conn_handler] Connection from socket #%d: (ip: %s, port: %d)\n",
                     new_socket, inet_ntoa(new_user.addr.sin_addr), ntohs(new_user.addr.sin_port));
@@ -44,9 +45,9 @@ int conn_handler(int server_sock, const std::string& file_path)
         }
 
         std::vector<int> closed_socks;
-
         for(auto &user : users)
         {
+            printf("[conn_handler] sock #%d\n", user.first);
             memset(buf, 0, BUFSIZ);
             int sock = user.first;
 
@@ -66,39 +67,24 @@ int conn_handler(int server_sock, const std::string& file_path)
 
             std::map<std::string, std::string> headers = parseHeaders(buf);
             std::string method = headers["method"];
-            std::string status = headers["status"];
             std::string id = headers["id"];
-            int fin = std::stoi(headers["fin"]);
 
-            std::string body = "";
-            std::string detail = "";
+            std::string status, body;
 
-            if(fin == 1)
-            {
-                printf("[conn_handler] Connection closed.\n");
-                closed_socks.push_back(sock);
-                continue;
-            }
-            if(method == "LOG_IN")
+            if(method == "LOG IN")
             {
                 if(authenticate(id, file_path))
                 {
                     add_user(sock, id, file_path);
-                    body = online_users();
-                    msg_handler(sock, "OK", body, method, detail);
+                    msg_handler(sock, status = "OK", body = online_users(), method);
                     continue;
                 }
-                detail = "ID already in uses";
-                msg_handler(sock, "Bad", body, method, detail);
+                msg_handler(sock, status = "Bad", body = "", method);
+                printf("[conn_handler] LOG IN request from sock #%d: ID already in use.\n", sock);
             }
-            else if(method == "LOG_OUT")
+            else if(method == "LOG OUT")
             {
-                msg_handler(sock, "OK", body, method, detail);
-                closed_socks.push_back(sock);
-                continue;
-            }
-            else if(method == "QUIT")
-            {
+                msg_handler(sock, status = "OK", body = "", method);
                 closed_socks.push_back(sock);
                 continue;
             }
