@@ -1,58 +1,64 @@
 #include "./client.h"
 
+// std::string request_msg =
+//             "method: %s\r\n"
+//             "id: %s\r\n"
+//             "session: %s\r\n"
+//             "\r\n"
+//             "%s";
+
 bool Client::log_in()
 {
     char buf[BUFSIZ];
-    std::string id;
 
+    // header fields
+    std::string method, id, session;
+
+    // flag
     bool authenticated = false;
-    int fin = 0;
 
     for(int attempt = 1; attempt <= 5; attempt++)
     {
+        memset(buf, 0, BUFSIZ);
+
+        // set fields and send request msg
         printf("[System] Enter your ID(%d/5): ", attempt);
         std::cin >> id;
+        msg_handler(0, method = "LOG IN", id, session = "log-in");
 
-        snprintf(buf, BUFSIZ, request_form.c_str(), "LOG-IN", "online", id.c_str(), fin);
-
-        if(send(sock_fd[0], buf, strlen(buf), 0) < 0)
-        {
-            printf("[System]: Failed to send request msg.\n");
-            continue;
-        }
-        if(recv(sock_fd[0], buf, BUFSIZ, 0) < 0)
+        // recieve and parse response msg from server
+        if(recv(client_socks[0], buf, BUFSIZ, 0) < 0)
         {
             printf("[System]: Failed to receive response msg.\n");
             continue;
         }
-
         std::map<std::string, std::string> headers = parseHeaders(buf);
         std::string status = headers["status"];
         std::string body = headers["body"];
         authenticated = (status == "OK") ? true : false;
 
+        // check authentication
         if(authenticated)
         {
             printf("[System] Hello %s.\n", id.c_str());
-            printf("===========================================\n");
             printf("%s\n", body.c_str());
-            printf("===========================================\n");
             this->id = id;
             
             return true;
         }
 
-        printf( "[System] ID already taken. Please choose a different ID. "
+        // if not authenticated
+        printf("[System] ID already taken. Please choose a different ID. "
                 "Continue to log in? [Y/N]: ");
-        char ans[10];
-        scanf("%s", ans);
+        char ans[2];
+        std::cin >> ans;
         if(strcasecmp(ans, "y"))
             break;
     }
-    fin = 1;
-    snprintf(buf, BUFSIZ, request_form.c_str(), "LOG-OUT", "offline", id.c_str(), fin);
-    send(sock_fd[0], buf, strlen(buf), 0);
-    printf("[System] Failed to log-in.\n");
+
+    // notify server of the user's staus
+    msg_handler(0, method = "LOG OUT", id = "", session = "log-in");
+    printf("[System] Authentication required to proceed further.\n");
 
     return false;
 }

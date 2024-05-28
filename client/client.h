@@ -14,30 +14,31 @@
 #include <vector>
 #include <set>
 #include "../include/utils/utils.h"
-// #include "../command/command.h"
 
 class Client
 {
 private:
-    std:: string id;
-    int sock_fd[2];
-    std::pair<std::string, int> login_server;
-    std::pair<std::string, int> chat_server;
-    struct sockaddr_in server;
+    std::string id = "";
+    std::string session = "log in";
 
-    std::string request_form =  "method: %s\r\n"
-                                "status: %s\r\n"
-                                "id: %s\r\n"
-                                "fin: %d\r\n"
-                                "\r\n";
+    int client_socks[2];
+    std::map<int, struct sockaddr_in> servers;
+    
+    std::string request_msg =
+                "method: %s\r\n"
+                "id: %s\r\n"
+                "session: %s\r\n"
+                "\r\n"
+                "%s";
 
 public:
-    Client(std::string host, int port);
+    Client();
     ~Client();
-    
-    void set_chat_server(std::string host, int port);
-    int create_socket(int opt);
-    void create_connection(int opt);
+
+    int client_socket(int opt);
+    int client_connect(int opt, std::string host, int port);
+
+    int msg_handler(int opt, std::string method, std::string id, std::string session, std::string body = "");
     bool log_in();
     int chat();
 };

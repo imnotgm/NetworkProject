@@ -5,9 +5,9 @@ CXX = g++
 CXXFLAGS = -I. -I./socket -I../include/utils -std=c++11 -Wall -Wextra
 
 # 소스 파일과 객체 파일 목록 정의
-SRCS =  main.cpp client.cpp login.cpp chat.cpp \
+SRCS =  main.cpp client.cpp login.cpp msg_handler.cpp chat.cpp \
 		./socket/socket.cpp ./socket/connect.cpp \
-		../include/utils/parseHeader.cpp
+		../include/utils/countSubstr.cpp ../include/utils/split.cpp ../include/utils/parseHeader.cpp
 
 # Object files
 OBJS = $(SRCS:.cpp=.o)
