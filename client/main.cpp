@@ -19,5 +19,5 @@ int main(int argc, char *argv[])
         if(client.client_connect(opt, chat_host, chat_port) == -1) return -1;
         client.chat();
     }
-    std::cout << "Program terminated successfully\n";
+    std::cout << "ChatPJO: Program terminated successfully\n";
 }

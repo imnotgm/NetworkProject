@@ -15,9 +15,9 @@ int msg_handler(int sock, std::string status, std::string body, std::string meth
 
     if(send(sock, buf, strlen(buf), 0) < 0)
     {
-        printf("[msg_handler] request(%s) from user user(%s) failed.\n", method.c_str(), id.c_str());
+        printf("[msg_handler] error: Failed to send response to user %s's request(%s).\n", id.c_str(), method.c_str());
         return -1;
     }
-    printf("[msg_handler] request(%s) from user(%s) succeeded.\n", method.c_str(), id.c_str());
+    printf("[msg_handler] Succeeded to send response to user %s's request(%s).\n", id.c_str(), method.c_str());
     return 0;
 }

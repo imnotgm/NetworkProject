@@ -16,7 +16,7 @@ void add_user(int sock, std::string id, const std::string &file_path)
         in_file.close();
         if (doc.Parse(content.c_str()).HasParseError())
         {
-            std::cerr << "Error parsing JSON file: " << file_path << std::endl;
+            std::cerr << "[add_user] error: Failed to parse JSON file: " << file_path << std::endl;
             return;
         }
     }
@@ -53,7 +53,7 @@ void add_user(int sock, std::string id, const std::string &file_path)
     std::ofstream out_file(file_path);
     if (!out_file.is_open())
     {
-        std::cerr << "Error opening file for writing: " << file_path << std::endl;
+        std::cerr << "[add_user] error: Failed to open file for writing: " << file_path << std::endl;
         return;
     }
 

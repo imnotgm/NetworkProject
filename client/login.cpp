@@ -22,14 +22,14 @@ bool Client::log_in()
         memset(buf, 0, BUFSIZ);
 
         // set fields and send request msg
-        printf("[System] Enter your ID(%d/5): ", attempt);
+        printf("ChatPJO: Enter your ID(%d/5): ", attempt);
         std::cin >> id;
         msg_handler(0, method = "LOG IN", id, session = "log-in");
 
         // recieve and parse response msg from server
         if(recv(client_socks[0], buf, BUFSIZ, 0) < 0)
         {
-            printf("[System]: Failed to receive response msg.\n");
+            printf("error: (conn_handler/recv) Failed to receive response.\n");
             continue;
         }
         std::map<std::string, std::string> headers = parseHeaders(buf);
@@ -40,7 +40,7 @@ bool Client::log_in()
         // check authentication
         if(authenticated)
         {
-            printf("[System] Hello %s.\n", id.c_str());
+            printf("ChatPJO: Hello, '%s'.\n", id.c_str());
             printf("%s\n", body.c_str());
             this->id = id;
             
@@ -48,7 +48,7 @@ bool Client::log_in()
         }
 
         // if not authenticated
-        printf("[System] ID already taken. Please choose a different ID. "
+        printf( "ChatPJO: ID already taken. Please choose a different ID. "
                 "Continue to log in? [Y/N]: ");
         char ans[2];
         std::cin >> ans;
@@ -58,7 +58,7 @@ bool Client::log_in()
 
     // notify server of the user's staus
     msg_handler(0, method = "LOG OUT", id = "", session = "log-in");
-    printf("[System] Authentication required to proceed further.\n");
+    printf("ChatPJO: Authentication required to proceed further.\n");
 
     return false;
 }

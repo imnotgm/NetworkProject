@@ -12,13 +12,13 @@ bool authenticate(std::string id, const std::string &file_path)
         in_file.close();
         if (doc.Parse(content.c_str()).HasParseError())
         {
-            std::cerr << "Error parsing JSON file: " << file_path << std::endl;
+            std::cerr << "[authenticate] error: Cannot parse JSON file: " << file_path << std::endl;
             return false;
         }
     }
     else
     {
-        std::cerr << "Error opening file for reading: " << file_path << std::endl;
+        std::cerr << "[authenticate] error: Cannot open file for reading: " << file_path << std::endl;
         return false;
     }
 

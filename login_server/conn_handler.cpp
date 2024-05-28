@@ -20,7 +20,7 @@ int conn_handler(int server_sock, const std::string& file_path)
 
         if((select(max_fd + 1, &read_sds, NULL, NULL, NULL)) < 0)
         {
-            printf("[conn_handler] SELECTION ERROR: No events on descriptors.\n");
+            printf("[conn_handler] error: No events on descriptors.\n");
             continue;
         }
 
@@ -28,7 +28,7 @@ int conn_handler(int server_sock, const std::string& file_path)
         {
             if((new_socket = server_accept(server_sock)) < 0)
             {
-                printf("[conn_handler] ACCEPTION ERROR: Failed to accept.\n");
+                printf("[conn_handler] error: Failed to accept.\n");
                 continue;
             }
 
@@ -60,7 +60,7 @@ int conn_handler(int server_sock, const std::string& file_path)
             bool conn_lost = bytes_recv <= 0 ? true : false;
             if(conn_lost)
             {
-                printf("[conn_handler] CONNECTION LOST.\n");
+                printf("[conn_handler] error: (recv) Connection lost.\n");
                 closed_socks.push_back(sock);
                 continue;
             }
@@ -80,7 +80,7 @@ int conn_handler(int server_sock, const std::string& file_path)
                     continue;
                 }
                 msg_handler(sock, status = "Bad", body = "", method);
-                printf("[conn_handler] LOG IN request from sock #%d: ID already in use.\n", sock);
+                printf("[conn_handler] Log-in request from sock #%d: ID already in use.\n", sock);
             }
             else if(method == "LOG OUT")
             {
@@ -96,7 +96,7 @@ int conn_handler(int server_sock, const std::string& file_path)
             FD_CLR(sock, &read_sds);
             close(sock);
 
-            printf("[conn_handler] session closed for user(%s)\n", id.c_str());
+            printf("[conn_handler] Session closed for user(%s)\n", id.c_str());
         }
     }
     return 0;

@@ -17,13 +17,13 @@ void remove_user(int sock, const std::string &file_path)
         in_file.close();
         if (doc.Parse(content.c_str()).HasParseError())
         {
-            std::cerr << "Error parsing JSON file: " << file_path << std::endl;
+            std::cerr << "[remove_user] error: Failed to parse JSON file: " << file_path << std::endl;
             return;
         }
     }
     else
     {
-        std::cerr << "Error opening file for reading: " << file_path << std::endl;
+        std::cerr << "[remove_user] error: Failed to open file for reading: " << file_path << std::endl;
         return;
     }
 
@@ -34,7 +34,7 @@ void remove_user(int sock, const std::string &file_path)
     }
     else
     {
-        std::cerr << "User ID not found in JSON: " << id << std::endl;
+        std::cerr << "[remove_user] error: User ID not found in JSON: " << id << std::endl;
         return;
     }
 
@@ -46,7 +46,7 @@ void remove_user(int sock, const std::string &file_path)
     std::ofstream out_file(file_path);
     if (!out_file.is_open())
     {
-        std::cerr << "Error opening file for writing: " << file_path << std::endl;
+        std::cerr << "[remove_user] error: Failed to open file for writing: " << file_path << std::endl;
         return;
     }
 

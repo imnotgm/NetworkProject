@@ -8,7 +8,7 @@ int server_accept(int sock)
     
     if((client_sock = accept(sock, (struct sockaddr *) &addr, &addr_len)) < 0)
     {
-        printf("Failed to accept.\n");
+        printf("[server_accept] error: Failed to accept.\n");
     }
     
     User user = {"tmp", "", 0, client_sock, addr};

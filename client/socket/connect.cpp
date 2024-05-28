@@ -2,7 +2,7 @@
 
 int Client::client_connect(int opt, std::string host, int port)
 {
-    std::string target = (opt == 0) ? "log-in" : "chat";
+    std::string dest = (opt == 0) ? "log-in" : "chat";
 
     struct sockaddr_in server;
     server.sin_family = AF_INET;
@@ -11,7 +11,7 @@ int Client::client_connect(int opt, std::string host, int port)
 
     if(connect(client_socks[opt], (struct sockaddr *)&server, sizeof(server)) < 0)
     {
-        printf("[cleint_connect] Failed to connect to %s server.\n", target.c_str());
+        printf("error: (cleint_connect) Failed to connect to %s server\n", dest.c_str());
         close(client_socks[opt]);
         return -1;
     }
