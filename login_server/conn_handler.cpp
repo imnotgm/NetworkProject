@@ -8,7 +8,7 @@ int conn_handler(int server_sock, const std::string& file_path)
 
     while(1)
     {
-        printf("[conn_handler] WHILE LOOP: begin.\n");
+        printf("[conn_handler] log: While loop begins.\n");
         FD_ZERO(&read_sds);
         FD_SET(server_sock, &read_sds);
         memset(buf, 0, BUFSIZ);
@@ -39,7 +39,7 @@ int conn_handler(int server_sock, const std::string& file_path)
             User new_user = tmp_user.back();
             tmp_user.pop_back();
             users[new_socket] = new_user;
-            printf("[conn_handler] Connection from socket #%d: (ip: %s, port: %d)\n",
+            printf("[conn_handler] Connection from socket #%d(ip: %s, port: %d)\n",
                     new_socket, inet_ntoa(new_user.addr.sin_addr), ntohs(new_user.addr.sin_port));
             continue;
         }
@@ -54,7 +54,7 @@ int conn_handler(int server_sock, const std::string& file_path)
             if(!FD_ISSET(sock, &read_sds)) continue;
 
             int bytes_recv = recv(sock, buf, BUFSIZ, 0);
-            printf("[conn_handler] msg from sock #%d: %dB received\n", sock, bytes_recv);
+            printf("[conn_handler] request msg from '%s'(sock #%d): %dB received\n", user.second.id.c_str(), sock, bytes_recv);
 
             //클라이언트가 프로그램을 강제로 종료하여 클라이언트의 소켓은 닫혔는데 서버의 소켓은 열려있다면 recv가 무한하게 0 바이트를 받는다.
             bool conn_lost = bytes_recv <= 0 ? true : false;
@@ -76,7 +76,7 @@ int conn_handler(int server_sock, const std::string& file_path)
                 if(authenticate(id, file_path))
                 {
                     add_user(sock, id, file_path);
-                    msg_handler(sock, status = "OK", body = online_users(), method);
+                    msg_handler(sock, status = "OK", body = "", method);
                     continue;
                 }
                 msg_handler(sock, status = "Bad", body = "", method);
@@ -96,7 +96,7 @@ int conn_handler(int server_sock, const std::string& file_path)
             FD_CLR(sock, &read_sds);
             close(sock);
 
-            printf("[conn_handler] Session closed for user(%s)\n", id.c_str());
+            printf("[conn_handler] Session closed for user '%s'.\n", id.c_str());
         }
     }
     return 0;
