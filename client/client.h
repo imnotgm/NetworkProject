@@ -19,7 +19,7 @@ class Client
 {
 private:
     std::string id = "";
-    std::string session = "log in";
+    std::string session = "";
 
     int client_socks[2];
     std::map<int, struct sockaddr_in> servers;

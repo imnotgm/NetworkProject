@@ -10,12 +10,10 @@
 bool Client::log_in()
 {
     char buf[BUFSIZ];
+    this->session = "log-in";
 
     // header fields
     std::string method, id, session;
-
-    // flag
-    bool authenticated = false;
 
     for(int attempt = 1; attempt <= 5; attempt++)
     {
@@ -35,7 +33,7 @@ bool Client::log_in()
         std::map<std::string, std::string> headers = parseHeaders(buf);
         std::string status = headers["status"];
         std::string body = headers["body"];
-        authenticated = (status == "OK") ? true : false;
+        bool authenticated = (status == "OK") ? true : false;
 
         // check authentication
         if(authenticated)
@@ -43,6 +41,7 @@ bool Client::log_in()
             printf("ChatPJO: Hello, '%s'.\n", id.c_str());
             printf("%s\n", body.c_str());
             this->id = id;
+            this->session = "";
             
             return true;
         }
