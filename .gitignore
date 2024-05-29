@@ -1,5 +1,6 @@
 test/
 .vscode/
+
 # Prerequisites
 *.d
 
@@ -32,3 +33,5 @@ test/
 *.exe
 *.out
 *.app
+server
+chat
