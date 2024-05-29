@@ -10,7 +10,7 @@
 
 extern std::vector<User> tmp_user;
 extern std::map<std::string, User> users;
-extern std::map<std::string, Session> sessions;
+extern std::map<std::string, Session *> sessions;
 
 int server_socket();
 void server_bind(int sock, int port);

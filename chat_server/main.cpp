@@ -2,7 +2,7 @@
 
 std::vector<User> tmp_user;
 std::map<std::string, User> users;
-std::map<std::string, Session> sessions;
+std::map<std::string, Session *> sessions;
 
 int main(int argc, char *argv[])
 {

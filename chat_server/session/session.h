@@ -35,6 +35,7 @@ public:
     Session(std::string name, std::string id, User user);
     ~Session();
 
+    bool empty();
     bool join(const std::string &id, User &user);
     bool leave(const std::string &id);
     void broadcast(std::string msg_type, std::string id, std::string body);
