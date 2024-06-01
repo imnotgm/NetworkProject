@@ -36,7 +36,7 @@ void add_user(int sock, std::string id, const std::string &file_path);
 void remove_user(int sock, const std::string &file_path);
 std::string online_users();
 
-int msg_handler(int sock, std::string status, std::string body, std::string method);
+int msg_handler(int sock, std::string request, std::string status_code, std::string body = "");
 int conn_handler(int server_sock, const std::string &file_path);
 
 #endif

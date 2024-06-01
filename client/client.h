@@ -25,7 +25,7 @@ private:
     std::map<int, struct sockaddr_in> servers;
     
     std::string request_msg =
-                "method: %s\r\n"
+                "request: %s\r\n"
                 "id: %s\r\n"
                 "session: %s\r\n"
                 "\r\n"
@@ -38,7 +38,7 @@ public:
     int client_socket(int opt);
     int client_connect(int opt, std::string host, int port);
 
-    int msg_handler(int opt, std::string method, std::string id, std::string session, std::string body = "");
+    int msg_handler(int opt, std::string request, std::string id, std::string session, std::string body = "");
     bool log_in();
     int chat();
 };

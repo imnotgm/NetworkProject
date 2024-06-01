@@ -66,25 +66,25 @@ int conn_handler(int server_sock, const std::string& file_path)
             }
 
             std::map<std::string, std::string> headers = parseHeaders(buf);
-            std::string method = headers["method"];
+            std::string request = headers["request"];
             std::string id = headers["id"];
 
-            std::string status, body;
+            std::string status_code, body;
 
-            if(method == "LOG IN")
+            if(request == "LOG IN")
             {
                 if(authenticate(id, file_path))
                 {
                     add_user(sock, id, file_path);
-                    msg_handler(sock, status = "OK", body = "", method);
+                    msg_handler(sock, request, status_code = "Authenticated", body = "");
                     continue;
                 }
-                msg_handler(sock, status = "Bad", body = "", method);
+                msg_handler(sock, request, status_code = "Unauthenticated", body = "");
                 printf("[conn_handler] Log-in request from sock #%d: ID already in use.\n", sock);
             }
-            else if(method == "LOG OUT")
+            else if(request == "LOG OUT")
             {
-                msg_handler(sock, status = "OK", body = "", method);
+                msg_handler(sock, request, status_code = "OK", body = "");
                 closed_socks.push_back(sock);
                 continue;
             }
