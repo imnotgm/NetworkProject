@@ -39,45 +39,39 @@ int Client::chat()
             if(input.empty()) continue;
 
             int opt;
-            std::string method, id, session, body;
+            std::string request, id, session, body;
 
             if(input.find('-') == 0)
             {
                 input.erase(0, 1);
                 std::vector<std::string> args = split(input, " ", 2);
 
-                // cmd ls [user/session]
+                // cmd ls [user/chat]
                 if(args[0] == "ls")
                 {
-                    method = "GET /";
-                    method += args[1];
-                    msg_handler(opt = 1, method, this->id, this->session, body = args[1]);
+                    request = "GET /";
+                    request += args[1];
+                    msg_handler(opt = 1, request, this->id, this->session, body = args[1]);
                 }
-                // cmd create [session] [user1 user2 user3 ...]
+                // cmd create [chat] [user1 user2 user3 ...]
                 else if(args[0] == "new")
                 {
-                    msg_handler(opt = 1, method = "SESSION /new", this->id, session = args[1], body = args[2]);
+                    msg_handler(opt = 1, request = "CHAT /new", this->id, session = args[1], body = args[2]);
                     this->session = args[1];
                 }
-                // cmd join [session]
+                // cmd join [chat]
                 else if(args[0] == "join")
                 {
-                    msg_handler(opt = 1, method = "SESSION /join", this->id, session = args[1]);
+                    msg_handler(opt = 1, request = "CHAT /join", this->id, session = args[1]);
                     this->session = args[1];
                     continue;
                 }
                 // cmd leave
                 else if(args[0] == "leave")
                 {
-                    msg_handler(opt = 1, method = "SESSION /leave", this->id, this->session);
+                    msg_handler(opt = 1, request = "CHAT /leave", this->id, this->session);
                     this->session = "";
                 }
-                // cmd quit
-                else if(args[0] == "quit")
-                {
-                    msg_handler(opt = 1, method = "QUIT", this->id, this->session);
-                }
-                // inspired by git error msg, "git: 'aaaa' is not a git command. See 'git --help'."
                 else
                 {
                     printf("ChatPJO: '%s' is not a ChatPJO command. See '-help'.\n", args[0].c_str());
@@ -85,11 +79,11 @@ int Client::chat()
             }
             else if(this->session.empty())
             {
-                printf("ChatPJO: You must join a session first to send a message.\n");
+                printf("ChatPJO: You must join a chat first to send a message.\n");
             }
             else
             {
-                msg_handler(opt = 1, method = "POST", this->id, this->session, input);
+                msg_handler(opt = 1, request = "CHAT /broadcast", this->id, this->session, input);
             }
             continue;
         }
@@ -108,20 +102,18 @@ int Client::chat()
             }
 
             std::map<std::string, std::string> headers = parseHeaders(buf);
-            std::string status = headers["status"];
-            std::string type = headers["type"];
+            std::string status_code = headers["status-code"];
+            std::string content_type = headers["content-type"];
             // int len = std::stoi(headers["content-length"]);
             std::string body = headers["body"];
 
-            if(status == "OK")
+            if(status_code == "OK")
             {
-                if(type == "msg")
-                    printf("%s\n", body.c_str());
+                printf("%s\n", body.c_str());
             }
-            else if(status == "Bad")
+            else if(status_code == "Bad Request")
             {
-                if(type == "error")
-                    printf("%s: %s\n", type.c_str(), body.c_str());
+                printf("%s: %s\n", content_type.c_str(), body.c_str());
             }
             continue;
         }

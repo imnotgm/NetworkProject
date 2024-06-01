@@ -1,12 +1,12 @@
 #include "../chat_server.h"
 
-std::string live_session_list()
+std::string live_chat_list()
 {
-    std::string list = "[live sessions]\n";
+    std::string list = "[live chats]\n";
     int cnt = 0;
-    for(auto &session : sessions)
+    for(auto &group : chat_groups)
     {
-        auto &name = session.first;
+        auto &name = group.first;
         list += "- " + name + "\n";
         cnt++;
     }

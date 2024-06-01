@@ -1,5 +1,5 @@
-#ifndef SESSION_H
-#define SESSION_H
+#ifndef CHAT_GROUP_H
+#define CHAT_GROUP_H
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -14,26 +14,28 @@
 #include <cerrno>
 #include <cstring>
 #include <string>
+#include <format>
 #include <map>
 #include <vector>
 #include "../../login_server/user/user.h"
 
-class Session
+class ChatGroup
 {
 private:
     char buf[BUFSIZ];
-    std::string resoponse_msg = "status: %s\r\n"
-                                 "type: %s\r\n"
-                                 "content-length: %d\r\n"
-                                 "\r\n"
-                                 "%s";
+    std::string resoponse_msg =
+                "status-code: %s\r\n"
+                "content-type: %s\r\n"
+                "content-length: %d\r\n"
+                "\r\n"
+                "%s";
     std::string name;
     std::map<std::string, User> members;
 
 public:
-    Session() {};
-    Session(std::string name, std::string id, User user);
-    ~Session();
+    ChatGroup() {};
+    ChatGroup(std::string name, std::string id, User user);
+    ~ChatGroup();
 
     bool empty();
     bool join(const std::string &id, User &user);

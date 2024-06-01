@@ -1,6 +1,8 @@
-#include "./session.h"
+#include "./ChatGroup.h"
 
-bool Session::empty()
+// std::map<std::string, User> members;
+
+bool ChatGroup::empty()
 {
     if(members.empty())
         return true;

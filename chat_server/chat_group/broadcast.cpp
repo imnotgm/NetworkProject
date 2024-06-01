@@ -1,15 +1,15 @@
-#include "./session.h"
+#include "./ChatGroup.h"
 
 /*
 std::map<std::string, User> members;
-std::string resoponse_form = "status: %s\r\n"
-                             "type": %s\r\n"
-                             "content-length: %d\r\n"
-                             "\r\n"
-                             "%s";
+std::string resoponse_form = 
+            "status: %s\r\n"
+            "content-length: %d\r\n"
+            "\r\n"
+            "%s";
 */
 
-void Session::broadcast(std::string msg_type, std::string id, std::string body)
+void ChatGroup::broadcast(std::string msg_type, std::string id, std::string body)
 {
     char response_body[BUFSIZ];
     memset(response_body, 0, BUFSIZ);
@@ -17,9 +17,8 @@ void Session::broadcast(std::string msg_type, std::string id, std::string body)
 
     std::string body_form = (msg_type == "chat") ? "%s: %s" : "[Info] '%s' %s";
     snprintf(response_body, BUFSIZ, body_form.c_str(), id.c_str(), body.c_str());
-    snprintf(this->buf, BUFSIZ, this->resoponse_msg.c_str(), "OK", "msg", strlen(response_body), response_body);
 
-    std::cout << buf << std::endl;
+    snprintf(this->buf, BUFSIZ, this->resoponse_msg.c_str(), "OK", "msg", strlen(response_body), response_body);
 
     int cnt = 0;
     for(auto &member : members)

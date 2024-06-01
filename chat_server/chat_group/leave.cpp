@@ -1,13 +1,8 @@
-#include "./session.h"
+#include "./ChatGroup.h"
 
-// std::map<int, User> members;
-// std::map<std::string, int> id_to_sock;
-// std::string resoponse_form = "status: %s\r\n"
-//                              "content-length: %d\r\n"
-//                              "\r\n"
-//                              "%s";
+// std::map<std::string, User> members;
 
-bool Session::leave(const std::string &id)
+bool ChatGroup::leave(const std::string &id)
 {
     if(members.find(id) == members.end())
         return false;

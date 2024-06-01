@@ -73,107 +73,153 @@ int conn_handler(int server_sock)
             }
 
             std::map<std::string, std::string> headers = parseHeaders(buf);
-            std::string request_line = headers["method"];
-            std::vector<std::string> method = split(request_line, " ");
+            std::string request = headers["request"];
+            std::vector<std::string> request_line = split(request, " ");
+            std::string method = request_line[0];
+            std::string target = request_line[1];
             std::string id = headers["id"];
-            std::string name = headers["session"];
+            std::string session_id = headers["session"];
             std::string request_body = headers["body"];
 
-            // std::string resoponse_form =    "status: %s\r\n"
-            //                                 "type: %d\r\n"
-            //                                 "content-length: %d\r\n"
-            //                                 "\r\n"
-            //                                 "%s";
-            std::string status, type, response_body = "";
+            // std::string resoponse_form =
+            //             "status_code: %s\r\n"
+            //             "content-type: %d\r\n"
+            //             "content-length: %d\r\n"
+            //             "\r\n"
+            //             "%s";
+            std::string status_code, content_type, response_body = "";
 
-            if(method[0] == "GET")
+            if(method == "GET")
             {
-                if(method[1] == "/user")
+                if(target == "/user")
                 {
-                    msg_handler(client, status = "OK", type = "msg", response_body = user_list(), request_line);
+                    status_code = "OK";
+                    content_type = "msg";
+                    response_body = user_list();
                 }
-                else if(method[1] == "/session")
+                else if(target == "/chat")
                 {
-                    msg_handler(client, status = "OK", type = "msg", response_body = live_session_list(), request_line);
+                    status_code = "OK";
+                    content_type = "msg";
+                    response_body = live_chat_list();
                 }
                 else
-                    msg_handler(client, status = "Bad", type = "error", response_body = "wrong command", request_line);
-            }
-            else if(method[0] == "POST")
-            {
-                (*sessions[name]).broadcast("chat", id, request_body);
-            }
-            else if(method[0] == "SESSION")
-            {
-                if(method[1] == "/new")
                 {
-                    if(sessions.find(name) == sessions.end())
+                    status_code = "Bad Request";
+                    content_type = "error";
+                    response_body = "Wrong argument for command 'ls'";
+                }
+            }
+            else if(method == "CHAT")
+            {
+                if(target == "/broadcast")
+                {
+                    (*chat_groups[session_id]).broadcast("chat", id, request_body);
+                }
+                else if(target == "/new")
+                {
+                    if(chat_groups.find(session_id) == chat_groups.end())
                     {
-                        client.session = name;
-                        sessions[name] = new Session(name, id, client);
-                        msg_handler(client, status = "OK", type = "msg", response_body = "# New session created #", request_line);
+                        client.session = session_id;
+                        chat_groups[session_id] = new ChatGroup(session_id, id, client);
+                        status_code = "OK";
+                        content_type = "msg";
+                        response_body = "# New chat created #";
                     }
                     else
-                        msg_handler(client, status = "Bad", type = "error", response_body = "Session already exists.", request_line);
-                }
-                else if(method[1] == "/join")
-                {
-                    if(sessions.find(name) == sessions.end())
                     {
-                        printf("[conn_handler] Failed to find session '%s'.\n", name.c_str());
-                        msg_handler(client, status = "Bad", type = "error", response_body = "No such session.", request_line);
+                        status_code = "Duplicate";
+                        content_type = "msg";
+                        response_body = "Duplicate chat";
                     }
-                    else if((*sessions[name]).join(id, client))
+                }
+                else if(target == "/join")
+                {
+                    if(chat_groups.find(session_id) == chat_groups.end())
                     {
-                        client.session = name;
+                        printf("[conn_handler] Failed to find chat '%s'.\n", session_id.c_str());
+                        status_code = "Bad Request";
+                        content_type = "error";
+                        response_body = "No such chat";
+                    }
+                    else if((*chat_groups[session_id]).join(id, client))
+                    {
+                        client.session = session_id;
                         client.is_available = 0;
-                        (*sessions[name]).broadcast("info", id, "joined the session.");
-                        msg_handler(client, status = "OK", type = "msg", response_body = "# Joined the session #", request_line);
+                        (*chat_groups[session_id]).broadcast("info", id, "joined the chat.");
+                        status_code = "OK";
+                        content_type = "msg";
+                        response_body = "# Joined the chat #";
                     }
                     else
-                        msg_handler(client, status = "Bad", type = "error", response_body = "You have already joined.", request_line);
-                }
-                else if(method[1] == "/leave")
-                {
-                    if(sessions.find(name) == sessions.end())
                     {
-                        printf("[conn_handler] Failed to find session '%s'.\n", name.c_str());
-                        msg_handler(client, status = "Bad", type = "error", response_body = "No such session.", request_line);
+                        status_code = "Bad Request";
+                        content_type = "error";
+                        response_body = "You have already joined.";
                     }
-                    else if((*sessions[name]).leave(id))
+                }
+                else if(target == "/leave")
+                {
+                    if(chat_groups.find(session_id) == chat_groups.end())
+                    {
+                        status_code = "Bad Request";
+                        content_type = "error";
+                        response_body = "No such chat.";
+                        
+                        printf("[conn_handler] Failed to find chat '%s'.\n", session_id.c_str());
+                    }
+                    else if((*chat_groups[session_id]).leave(id))
                     {
                         client.session = "";
                         client.is_available = 1;
-                        (*sessions[name]).broadcast("info", id, "leaved the session.");
-                        msg_handler(client, status = "OK", type = "msg", "Succeeded to leave the session.", request_line);
+                        (*chat_groups[session_id]).broadcast("info", id, "leaved the chat.");
+
+                        status_code = "OK";
+                        content_type = "msg";
+                        response_body = "Succeeded to leave the chat.";
                     }
                     else
-                        msg_handler(client, status = "Bad", type = "error", "You are not in this session.", request_line);
+                    {
+                        status_code = "Bad Request";
+                        content_type = "error";
+                        response_body = "You are not in this chat.";
+                    }
                 }
             }
             else
             {
-                status = "Bad";
-                msg_handler(users[id], status, "error", "", request_line);
+                status_code = "Bad Request";
+                content_type = "error";
+                response_body = "Not viable request";
             }
+            msg_handler(users[id], request, status_code, content_type, response_body);
         }
         for(auto id : closed_clients)
         {
+            std::string session_id = users[id].session;
+            if(chat_groups.find(session_id) != chat_groups.end())
+            {
+                (*chat_groups[session_id]).leave(id);
+                (*chat_groups[session_id]).broadcast("info", id, "was forcibly removed from the groupleaved the chat.");
+                printf("[conn_handler] User '%s' was forcibly removed from the group '%s' due to a disconnection.\n", id.c_str(), session_id.c_str());
+            }
+            
             int sock = users[id].sock;
             FD_CLR(sock, &read_sds);
             close(sock);
             users.erase(id);
 
-            printf("[conn_handler] Session closed for user '%s'.\n", id.c_str());
+            printf("[conn_handler] Connection closed for user '%s'.\n", id.c_str());
         }
-        for(auto session : sessions)
+        for(auto group : chat_groups)
         {
-            std::string name = session.first;
-            if((*session.second).empty())
+            ChatGroup *group_obj = group.second;
+            std::string session_id = group.first;
+            if((*group_obj).empty())
             {
-                delete session.second;
-                sessions.erase(name);
-                printf("[conn_handler] Chat session '%s' closed.", name.c_str());
+                delete group_obj;
+                chat_groups.erase(session_id);
+                printf("[conn_handler] Not used chat '%s' closed.", session_id.c_str());
             }
         }
     }
