@@ -72,7 +72,6 @@ int conn_handler(int server_sock)
                 continue;
             }
 
-            std::cout << buf << std::endl;
             std::map<std::string, std::string> headers = parseHeaders(buf);
             std::string request = headers["request"];
             std::vector<std::string> request_line = split(request, " ");
@@ -199,7 +198,7 @@ int conn_handler(int server_sock)
                         client.session = "";
                         client.is_available = 1;
 
-                        snprintf(tmp_buf, BUFSIZ, "\"'%s' leaved the chat.\"", id.c_str());
+                        snprintf(tmp_buf, BUFSIZ, "'%s' leaved the chat.", id.c_str());
                         response_body = tmp_buf;
                         (*chat_groups[session_id]).broadcast("info", "system", response_body);
 
