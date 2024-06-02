@@ -7,7 +7,7 @@ CXXFLAGS = -Ichat_server -I./socket -I./chat_group -I./list -I../login_server/us
 # 소스 파일과 객체 파일 목록 정의
 SRCS =  main.cpp conn_handler.cpp msg_handler.cpp \
         ./socket/socket.cpp ./socket/bind.cpp ./socket/listen.cpp ./socket/accept.cpp \
-        ./chat_group/ChatGroup.cpp ./chat_group/join.cpp ./chat_group/leave.cpp ./chat_group/broadcast.cpp ./chat_group/empty.cpp \
+        ./chat_group/ChatGroup.cpp ./chat_group/join.cpp ./chat_group/leave.cpp ./chat_group/broadcast.cpp ./chat_group/empty.cpp ./chat_group/isMember.cpp \
 		./list/user_list.cpp ./list/live_chat_list.cpp \
         ../include/utils/countSubstr.cpp ../include/utils/parseHeader.cpp ../include/utils/split.cpp
 

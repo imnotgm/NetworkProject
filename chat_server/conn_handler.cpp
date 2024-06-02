@@ -72,22 +72,26 @@ int conn_handler(int server_sock)
                 continue;
             }
 
+            std::cout << buf << std::endl;
             std::map<std::string, std::string> headers = parseHeaders(buf);
             std::string request = headers["request"];
             std::vector<std::string> request_line = split(request, " ");
-            std::string method = request_line[0];
-            std::string target = request_line[1];
+            std::string method = request_line[0], target = request_line[1];
             std::string id = headers["id"];
             std::string session_id = headers["session"];
             std::string request_body = headers["body"];
 
             // std::string resoponse_form =
             //             "status_code: %s\r\n"
+            //             "sender: %s\r\n"
             //             "content-type: %d\r\n"
             //             "content-length: %d\r\n"
             //             "\r\n"
             //             "%s";
-            std::string status_code, content_type, response_body = "";
+            std::string status_code, sender = "system", content_type = "", response_body = "";
+
+            char tmp_buf[BUFSIZ];
+            memset(tmp_buf, 0, BUFSIZ);
 
             if(method == "GET")
             {
@@ -95,7 +99,7 @@ int conn_handler(int server_sock)
                 {
                     status_code = "OK";
                     content_type = "msg";
-                    response_body = user_list();
+                    response_body = user_list(id);
                 }
                 else if(target == "/chat")
                 {
@@ -121,20 +125,38 @@ int conn_handler(int server_sock)
                     if(chat_groups.find(session_id) == chat_groups.end())
                     {
                         client.session = session_id;
+                        client.is_available = 0;
                         chat_groups[session_id] = new ChatGroup(session_id, id, client);
-                        status_code = "OK";
+                        std::vector<std::string> members = split(request_body, " ", 0);
+                        for(auto &mem_id : members)
+                        {
+                            std::cout << mem_id << std::endl;
+                            if(users.find(mem_id) == users.end() || (*chat_groups[session_id]).isMember(mem_id))
+                                continue;
+
+                            msg_handler(users[mem_id], request, status_code = "New Session", sender = id,content_type = "ask", response_body = session_id);
+                        }
+
+                        status_code = "New Session";
                         content_type = "msg";
-                        response_body = "# New chat created #";
+                        snprintf(tmp_buf, BUFSIZ, "\"New chat session '%s' started\"", session_id.c_str());
+                        response_body = tmp_buf;
                     }
                     else
                     {
-                        status_code = "Duplicate";
-                        content_type = "msg";
-                        response_body = "Duplicate chat";
+                        status_code = "Bad Request";
+                        content_type = "error";
+                        response_body = "Duplicate chat name";
                     }
                 }
                 else if(target == "/join")
                 {
+                    if(!client.session.empty())
+                    {
+                        status_code = "Bad Request";
+                        content_type = "error";
+                        response_body = "You must leave current chat to join anther one";
+                    }
                     if(chat_groups.find(session_id) == chat_groups.end())
                     {
                         printf("[conn_handler] Failed to find chat '%s'.\n", session_id.c_str());
@@ -146,10 +168,14 @@ int conn_handler(int server_sock)
                     {
                         client.session = session_id;
                         client.is_available = 0;
-                        (*chat_groups[session_id]).broadcast("info", id, "joined the chat.");
-                        status_code = "OK";
+
+                        snprintf(tmp_buf, BUFSIZ, "'%s' joined the chat.", id.c_str());
+                        response_body = tmp_buf;
+                        (*chat_groups[session_id]).broadcast("info", id, response_body);
+
+                        status_code = "New Session";
                         content_type = "msg";
-                        response_body = "# Joined the chat #";
+                        response_body = "\"You've joined the chat.\"";
                     }
                     else
                     {
@@ -172,7 +198,10 @@ int conn_handler(int server_sock)
                     {
                         client.session = "";
                         client.is_available = 1;
-                        (*chat_groups[session_id]).broadcast("info", id, "leaved the chat.");
+
+                        snprintf(tmp_buf, BUFSIZ, "\"'%s' leaved the chat.\"", id.c_str());
+                        response_body = tmp_buf;
+                        (*chat_groups[session_id]).broadcast("info", "system", response_body);
 
                         status_code = "OK";
                         content_type = "msg";
@@ -192,7 +221,7 @@ int conn_handler(int server_sock)
                 content_type = "error";
                 response_body = "Not viable request";
             }
-            msg_handler(users[id], request, status_code, content_type, response_body);
+            msg_handler(users[id], request, status_code, sender, content_type, response_body);
         }
         for(auto id : closed_clients)
         {
@@ -200,7 +229,7 @@ int conn_handler(int server_sock)
             if(chat_groups.find(session_id) != chat_groups.end())
             {
                 (*chat_groups[session_id]).leave(id);
-                (*chat_groups[session_id]).broadcast("info", id, "was forcibly removed from the groupleaved the chat.");
+                (*chat_groups[session_id]).broadcast("system", id, "leaved the chat.");
                 printf("[conn_handler] User '%s' was forcibly removed from the group '%s' due to a disconnection.\n", id.c_str(), session_id.c_str());
             }
             
@@ -211,15 +240,21 @@ int conn_handler(int server_sock)
 
             printf("[conn_handler] Connection closed for user '%s'.\n", id.c_str());
         }
-        for(auto group : chat_groups)
+        // for(auto &groups : chat_groups) map 순회 과정에서 erase 이후 segmentation fault.
+        for(auto it = chat_groups.begin(); it != chat_groups.end();)
         {
-            ChatGroup *group_obj = group.second;
-            std::string session_id = group.first;
-            if((*group_obj).empty())
+            ChatGroup *group_obj = it->second;
+            std::string session_id = it->first;
+            if(group_obj->empty())
             {
+                // erase 함수로 다음 유효한 반복자를 반환.
+                it = chat_groups.erase(it);
                 delete group_obj;
-                chat_groups.erase(session_id);
-                printf("[conn_handler] Not used chat '%s' closed.", session_id.c_str());
+                printf("[conn_handler] Not used chat '%s' closed.\n", session_id.c_str());
+            }
+            else
+            {
+                it++;
             }
         }
     }

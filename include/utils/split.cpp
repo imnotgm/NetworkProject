@@ -7,7 +7,7 @@ std::vector<std::string> split(std::string str, std::string delim, int limit)
     int found = 0;
 
     if(limit == 0)
-        limit = countSubstr(str, delim);
+        limit = countSubstr(str, delim) + 1;
 
     while(start < str.length())
     {

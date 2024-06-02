@@ -7,6 +7,8 @@ const std::string db_path = "./user_db.txt";
 
 int main(int argc, char *argv[])
 {
+    system("clear");
+    
     const int port = (argc > 1) ? std::atoi(argv[1]) : 10000;
     const int backlog = (argc > 2) ? std::atoi(argv[2]) : SOMAXCONN;
     

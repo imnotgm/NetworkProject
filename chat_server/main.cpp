@@ -6,6 +6,8 @@ std::map<std::string, ChatGroup *> chat_groups;
 
 int main(int argc, char *argv[])
 {
+    system("clear");
+    
     const int port = (argc > 1) ? std::atoi(argv[1]) : 10001;
     const int backlog = (argc > 2) ? std::atoi(argv[2]) : SOMAXCONN;
 

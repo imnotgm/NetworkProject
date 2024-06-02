@@ -17,9 +17,9 @@ void server_bind(int sock, int port);
 void server_listen(int sock, int backlog);
 int server_accept(int sock);
 
-std::string user_list();
+std::string user_list(std::string id);
 std::string live_chat_list();
-int msg_handler(User &user, std::string request, std::string status_code, std::string type, std::string body);
+int msg_handler(User &user, std::string request, std::string status_code, std::string session, std::string content_type, std::string body);
 int conn_handler(int server_sock);
 
 #endif

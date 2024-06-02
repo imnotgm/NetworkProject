@@ -11,14 +11,23 @@ std::string resoponse_form =
 
 void ChatGroup::broadcast(std::string msg_type, std::string id, std::string body)
 {
-    char response_body[BUFSIZ];
-    memset(response_body, 0, BUFSIZ);
+    std::string resoponse_msg =
+                "status-code: %s\r\n"
+                "sender: %s\r\n"
+                "content-type: %s\r\n"
+                "content-length: %d\r\n"
+                "\r\n"
+                "%s";
+
+    char tmp[BUFSIZ];
+    memset(tmp, 0, BUFSIZ);
     memset(this->buf, 0, BUFSIZ);
 
-    std::string body_form = (msg_type == "chat") ? "%s: %s" : "[Info] '%s' %s";
-    snprintf(response_body, BUFSIZ, body_form.c_str(), id.c_str(), body.c_str());
-
-    snprintf(this->buf, BUFSIZ, this->resoponse_msg.c_str(), "OK", "msg", strlen(response_body), response_body);
+    if(msg_type != "chat")
+        snprintf(tmp, BUFSIZ, "system: %s", body.c_str());
+    else
+        snprintf(tmp, BUFSIZ, "@%s: %s", id.c_str(), body.c_str());
+    snprintf(this->buf, BUFSIZ, resoponse_msg.c_str(), "OK", id.c_str(), "msg", strlen(tmp), tmp);
 
     int cnt = 0;
     for(auto &member : members)

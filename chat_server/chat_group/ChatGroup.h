@@ -23,12 +23,6 @@ class ChatGroup
 {
 private:
     char buf[BUFSIZ];
-    std::string resoponse_msg =
-                "status-code: %s\r\n"
-                "content-type: %s\r\n"
-                "content-length: %d\r\n"
-                "\r\n"
-                "%s";
     std::string name;
     std::map<std::string, User> members;
 
@@ -38,6 +32,7 @@ public:
     ~ChatGroup();
 
     bool empty();
+    bool isMember(const std::string &id);
     bool join(const std::string &id, User &user);
     bool leave(const std::string &id);
     void broadcast(std::string msg_type, std::string id, std::string body);

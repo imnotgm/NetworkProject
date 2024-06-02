@@ -3,9 +3,8 @@
 int Client::chat()
 {
     msg_handler(1, "", this->id, "");
-    printf( "Usage: -[option] [args]\n"
-            "Option:\n"
-            "  -help show detailed usage information\n\n");
+    printf( "usage: -[option] [args]\n"
+            "option 'help' show detailed usage information\n\n");
 
     char buf[BUFSIZ];
     int client_sock = client_socks[1];
@@ -44,42 +43,43 @@ int Client::chat()
             if(input.find('-') == 0)
             {
                 input.erase(0, 1);
-                std::vector<std::string> args = split(input, " ", 2);
+                std::vector<std::string> cmd_line = split(input, " ", 2);
 
                 // cmd ls [user/chat]
-                if(args[0] == "ls")
+                if(cmd_line[0] == "ls")
                 {
                     request = "GET /";
-                    request += args[1];
-                    msg_handler(opt = 1, request, this->id, this->session, body = args[1]);
+                    request += cmd_line[1];
+                    msg_handler(opt = 1, request, this->id, this->session, body = cmd_line[1]);
                 }
                 // cmd create [chat] [user1 user2 user3 ...]
-                else if(args[0] == "new")
+                else if(cmd_line[0] == "new")
                 {
-                    msg_handler(opt = 1, request = "CHAT /new", this->id, session = args[1], body = args[2]);
-                    this->session = args[1];
+                    std::vector<std::string> args = split(cmd_line[1], " ", 2);
+                    msg_handler(opt = 1, request = "CHAT /new", this->id, session = args[0], body = args[1]);
+                    this->session = args[0];
                 }
                 // cmd join [chat]
-                else if(args[0] == "join")
+                else if(cmd_line[0] == "join")
                 {
-                    msg_handler(opt = 1, request = "CHAT /join", this->id, session = args[1]);
-                    this->session = args[1];
+                    msg_handler(opt = 1, request = "CHAT /join", this->id, session = cmd_line[1]);
+                    this->session = cmd_line[1];
                     continue;
                 }
                 // cmd leave
-                else if(args[0] == "leave")
+                else if(cmd_line[0] == "leave")
                 {
                     msg_handler(opt = 1, request = "CHAT /leave", this->id, this->session);
                     this->session = "";
                 }
                 else
                 {
-                    printf("ChatPJO: '%s' is not a ChatPJO command. See '-help'.\n", args[0].c_str());
+                    printf("ChatPJO: '%s' is not a ChatPJO command. See '-help'.\n\n", cmd_line[0].c_str());
                 }
             }
             else if(this->session.empty())
             {
-                printf("ChatPJO: You must join a chat first to send a message.\n");
+                printf("ChatPJO: You must join a chat first to send a message.\n\n");
             }
             else
             {
@@ -100,9 +100,9 @@ int Client::chat()
 
                 return -1;
             }
-
             std::map<std::string, std::string> headers = parseHeaders(buf);
             std::string status_code = headers["status-code"];
+            std::string sender = headers["sender"];
             std::string content_type = headers["content-type"];
             // int len = std::stoi(headers["content-length"]);
             std::string body = headers["body"];
@@ -114,6 +114,27 @@ int Client::chat()
             else if(status_code == "Bad Request")
             {
                 printf("%s: %s\n", content_type.c_str(), body.c_str());
+            }
+            else if(status_code == "New Session")
+            {
+                if(content_type == "msg")
+                {
+                    system("clear");
+                    printf("%s\n", body.c_str());
+                }
+                else if(content_type == "ask")
+                {
+                    printf("Invitation from %s. Will you join? [Y/N] ", sender.c_str());
+                    char ans[2];
+                    std::cin >> ans;
+                    if(strcasecmp(ans, "y"))
+                        continue;
+                    else
+                    {
+                        msg_handler(1, "CHAT /join", this->id, body);
+                        this->session = body;
+                    }
+                }
             }
             continue;
         }
